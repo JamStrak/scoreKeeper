@@ -4,6 +4,20 @@
     <meta charset="UTF-8">
     <title>Scorekeeper</title>
     <style>
+        .king {
+        font-size: 5em; /* 放大字体 */
+        animation: rainbowAnimation 2s infinite; /* 添加动画 */
+}
+
+        @keyframes rainbowAnimation {
+            0% {color: red;}
+            20% {color: orange;}
+            40% {color: yellow;}
+            60% {color: green;}
+            80% {color: blue;}
+            100% {color: purple;}
+}
+
         body {
             font-family: Arial, sans-serif;
             text-align: center;
@@ -259,7 +273,13 @@ function updateAllRanks() {
 
     players.forEach((player, index) => {
         const rankDisplay = player.querySelector('.player-rank');
-        rankDisplay.textContent = 'Rank: #' + (index + 1);
+        if (index === 0) { // 第一名
+            rankDisplay.textContent = 'King';
+            rankDisplay.classList.add('king'); // 添加 king 类
+        } else { // 其他排名
+            rankDisplay.textContent = 'Rank: #' + (index + 1);
+            rankDisplay.classList.remove('king'); // 移除 king 类
+        }
     });
 }
 
