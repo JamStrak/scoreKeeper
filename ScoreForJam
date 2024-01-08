@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Scorekeeper</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        #scoreboard {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-around;
+            height: 100%;
+        }
+        .player {
+            padding: 20px;
+            border: 1px solid #ddd;
+            margin: 10px;
+            background-color: #f3f3f3;
+            width: 90%;
+            text-align: center;
+        }
+        .player-name {
+            font-size: 2em;
+            margin-bottom: 15px;
+        }
+        .score-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .score {
+            font-size: 6em;
+            margin: 20px;
+        }
+        .change-score, .team-button {
+            padding: 20px 40px;
+            font-size: 2em;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        .increase {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .decrease {
+            background-color: #f44336;
+            color: white;
+        }
+        .team-button {
+            background-color: grey;
+            color: white;
+            margin: 0 10px;
+        }
+        .team-button.selected {
+            background-color: orange; /* A team button */
+            color: white;
+        }
+        .team-button.selected.team-b {
+            background-color: blue; /* B team button */
+            color: white;
+        }
+        .increase:hover, .decrease:hover, .team-button:hover {
+            opacity: 0.8;
+        }
+        .reset-score {
+            padding: 10px 20px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-size: 1.5em;
+        }
+        .reset-score:hover {
+            background-color: #d73833;
+        }
+    </style>
+</head>
+<body>
+    <div id="scoreboard">
+        <!-- Player 1 -->
+        <div class="player" id="player1" data-team="">
+            <input type="text" class="player-name" value="飞翔母球大师-赵公子" />
+            <div class="score-container">
+                <button class="team-button" data-team="A">A team</button>
+                <button class="change-score decrease">-</button>
+                <div class="score">0</div>
+                <button class="change-score increase">+</button>
+                <button class="team-button" data-team="B">B team</button>
+            </div>
+            <button class="reset-score">Reset</button>
+        </div>
+        <!-- Player 2 -->
+        <div class="player" id="player2" data-team="">
+            <input type="text" class="player-name" value="情意绵绵老年杆-陈员外" />
+            <div class="score-container">
+                <button class="team-button" data-team="A">A team</button>
+                <button class="change-score decrease">-</button>
+                <div class="score">0</div>
+                <button class="change-score increase">+</button>
+                <button class="team-button" data-team="B">B team</button>
+            </div>
+            <button class="reset-score">Reset</button>
+        </div>
+        <!-- Player 3 -->
+        <div class="player" id="player3" data-team="">
+            <input type="text" class="player-name" value="大力奇迹姆普弟-王总" />
+            <div class="score-container">
+                <button class="team-button" data-team="A">A team</button>
+                <button class="change-score decrease">-</button>
+                <div class="score">0</div>
+                <button class="change-score increase">+</button>
+                <button class="team-button" data-team="B">B team</button>
+            </div>
+            <button class="reset-score">Reset</button>
+        </div>
+        <!-- Player 4 -->
+        <div class="player" id="player4" data-team="">
+            <input type="text" class="player-name" value="出杆不瞄火箭哥-黄总" />
+            <div class="score-container">
+                <button class="team-button" data-team="A">A team</button>
+                <button class="change-score decrease">-</button>
+                <div class="score">0</div>
+                <button class="change-score increase">+</button>
+                <button class="team-button" data-team="B">B team</button>
+            </div>
+            <button class="reset-score">Reset</button>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+    const players = document.querySelectorAll('.player');
+
+    players.forEach(player => {
+        const increaseButton = player.querySelector('.increase');
+        const decreaseButton = player.querySelector('.decrease');
+        const resetButton = player.querySelector('.reset-score');
+        const scoreDisplay = player.querySelector('.score');
+        const teamButtons = player.querySelectorAll('.team-button');
+
+        increaseButton.addEventListener('click', () => {
+            updateScore(player, 1);
+        });
+
+        decreaseButton.addEventListener('click', () => {
+            updateScore(player, -1);
+        });
+
+        resetButton.addEventListener('click', () => {
+            scoreDisplay.textContent = '0';
+        });
+
+        teamButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                toggleTeam(player, button);
+            });
+        });
+    });
+
+    function updateScore(player, change) {
+        const selectedTeam = player.getAttribute('data-team');
+        let teamMembers = [player];
+
+        if (selectedTeam) {
+            teamMembers = document.querySelectorAll(`.player[data-team="${selectedTeam}"]`);
+            const oppositeTeam = selectedTeam === 'A' ? 'B' : 'A';
+            const oppositeTeamMembers = document.querySelectorAll(`.player[data-team="${oppositeTeam}"]`);
+
+            updateTeamScore(teamMembers, change);
+            updateTeamScore(oppositeTeamMembers, -change);
+        } else {
+            updateIndividualScore(player, change);
+        }
+    }
+
+    function updateTeamScore(members, change) {
+        members.forEach(member => {
+            const scoreDisplay = member.querySelector('.score');
+            let score = parseInt(scoreDisplay.textContent);
+            score += change;
+            scoreDisplay.textContent = score;
+        });
+    }
+
+    function updateIndividualScore(player, change) {
+        const scoreDisplay = player.querySelector('.score');
+        let score = parseInt(scoreDisplay.textContent);
+        score += change;
+        scoreDisplay.textContent = score;
+    }
+
+    function toggleTeam(player, button) {
+        const team = button.getAttribute('data-team');
+        const isSelected = button.classList.contains('selected');
+
+        player.querySelectorAll('.team-button').forEach(b => b.classList.remove('selected'));
+
+        if (isSelected) {
+            player.setAttribute('data-team', '');
+        } else {
+            button.classList.add('selected');
+            player.setAttribute('data-team', team);
+        }
+    }
+});
+
+    </script>
+</body>
+</html>
