@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>-Scorekeeper-</title>
+    <title>Scorekeeper</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -91,7 +91,11 @@
     <div id="scoreboard">
         <!-- Player 1 -->
         <div class="player" id="player1" data-team="">
-            <input type="text" class="player-name" value="飞翔母球大师-赵公子" />
+    <div class="player-header">
+        <span class="player-rank">Rank: #</span>
+        <input type="text" class="player-name" value="飞翔母球大师-赵公子" />
+        <span class="player-high-score">High Score: 0</span>
+    </div>
             <div class="score-container">
                 <button class="team-button" data-team="A">A team</button>
                 <button class="change-score decrease">-</button>
@@ -102,8 +106,12 @@
             <button class="reset-score">Reset</button>
         </div>
         <!-- Player 2 -->
-        <div class="player" id="player2" data-team="">
-            <input type="text" class="player-name" value="情意绵绵老年杆-陈员外" />
+<div class="player" id="player2" data-team="">
+    <div class="player-header">
+        <span class="player-rank">Rank: #</span>
+        <input type="text" class="player-name" value="情意绵绵老年杆-陈员外" />
+        <span class="player-high-score">High Score: 0</span>
+    </div>
             <div class="score-container">
                 <button class="team-button" data-team="A">A team</button>
                 <button class="change-score decrease">-</button>
@@ -115,7 +123,11 @@
         </div>
         <!-- Player 3 -->
         <div class="player" id="player3" data-team="">
-            <input type="text" class="player-name" value="大力奇迹姆普弟-王总" />
+    <div class="player-header">
+        <span class="player-rank">Rank: #</span>
+        <input type="text" class="player-name" value="大力奇迹姆普弟-王总" />
+        <span class="player-high-score">High Score: 0</span>
+    </div>
             <div class="score-container">
                 <button class="team-button" data-team="A">A team</button>
                 <button class="change-score decrease">-</button>
@@ -127,7 +139,11 @@
         </div>
         <!-- Player 4 -->
         <div class="player" id="player4" data-team="">
-            <input type="text" class="player-name" value="出杆不瞄火箭哥-黄总" />
+    <div class="player-header">
+        <span class="player-rank">Rank: #</span>
+        <input type="text" class="player-name" value="出杆不瞄火箭哥-黄总" />
+        <span class="player-high-score">High Score: 0</span>
+    </div>
             <div class="score-container">
                 <button class="team-button" data-team="A">A team</button>
                 <button class="change-score decrease">-</button>
@@ -169,27 +185,35 @@
     });
 
     function updateScore(player, change) {
-        const selectedTeam = player.getAttribute('data-team');
-        let teamMembers = [player];
+       const selectedTeam = player.getAttribute('data-team');
+    let teamMembers = [player];
 
-        if (selectedTeam) {
-            teamMembers = document.querySelectorAll(`.player[data-team="${selectedTeam}"]`);
-            const oppositeTeam = selectedTeam === 'A' ? 'B' : 'A';
-            const oppositeTeamMembers = document.querySelectorAll(`.player[data-team="${oppositeTeam}"]`);
+    if (selectedTeam) {
+        teamMembers = document.querySelectorAll(`.player[data-team="${selectedTeam}"]`);
+        const oppositeTeam = selectedTeam === 'A' ? 'B' : 'A';
+        const oppositeTeamMembers = document.querySelectorAll(`.player[data-team="${oppositeTeam}"]`);
 
-            updateTeamScore(teamMembers, change);
-            updateTeamScore(oppositeTeamMembers, -change);
-        } else {
-            updateIndividualScore(player, change);
-        }
+        updateTeamScore(teamMembers, change);
+        updateTeamScore(oppositeTeamMembers, -change);
+    } else {
+        updateIndividualScore(player, change);
+    }
+
+    // 确保在每次分数更新后都调用这些函数
+    updateHighScore(player);
+    updateAllRanks();
+        
     }
 
     function updateTeamScore(members, change) {
         members.forEach(member => {
-            const scoreDisplay = member.querySelector('.score');
-            let score = parseInt(scoreDisplay.textContent);
-            score += change;
-            scoreDisplay.textContent = score;
+        const scoreDisplay = member.querySelector('.score');
+        let score = parseInt(scoreDisplay.textContent);
+        score += change;
+        scoreDisplay.textContent = score;
+
+        // 现在也在组队模式下更新最高分
+        updateHighScore(member);
         });
     }
 
@@ -214,6 +238,30 @@
         }
     }
 });
+function updateHighScore(player) {
+    const scoreDisplay = player.querySelector('.score');
+    const highScoreDisplay = player.querySelector('.player-high-score');
+    let score = parseInt(scoreDisplay.textContent);
+    let highScore = parseInt(highScoreDisplay.textContent.split(': ')[1]);
+
+    if (score > highScore) {
+        highScoreDisplay.textContent = 'High Score: ' + score;
+    }
+}
+
+function updateAllRanks() {
+    const players = Array.from(document.querySelectorAll('.player'));
+    players.sort((a, b) => {
+        const scoreA = parseInt(a.querySelector('.score').textContent);
+        const scoreB = parseInt(b.querySelector('.score').textContent);
+        return scoreB - scoreA;
+    });
+
+    players.forEach((player, index) => {
+        const rankDisplay = player.querySelector('.player-rank');
+        rankDisplay.textContent = 'Rank: #' + (index + 1);
+    });
+}
 
     </script>
 </body>
