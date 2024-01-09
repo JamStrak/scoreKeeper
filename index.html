@@ -286,5 +286,21 @@ function updateAllRanks() {
 }
 
     </script>
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // 防止双击放大
+        const preventDoubleClickZoom = (event) => {
+            if (event.detail > 1) {
+                event.preventDefault();
+            }
+        };
+
+        // 为所有按钮添加防止双击放大的事件监听器
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('click', preventDoubleClickZoom);
+        });
+    });
+</script>
+
 </body>
 </html>
